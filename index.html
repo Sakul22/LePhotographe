@@ -271,7 +271,7 @@ const CONFIG={
     spots:10,                  // nombre de séances offertes (à retirer à la main quand elles sont toutes données)
     pack:{id:"decouverte",name:"Séance découverte offerte (Pack Mini)",price:0,qty:"5 à 7 photos retouchées"}
   },
-  categories:["Football","Moto","Volleyball","Autres sports",],
+  categories:["Football","Moto","Volleyball","Auto","Autres sports",],
   packs:[
     {id:"mini",name:"Pack Mini",price:15,qty:"5 à 7 photos retouchées"},
     {id:"focus",name:"Pack Focus",price:25,qty:"12 à 18 photos retouchées",hot:true},
@@ -282,20 +282,28 @@ const CONFIG={
   /* Portfolio : ajoutez {src:"images/photo1.jpg", cat:"Volleyball", alt:"…", ratio:"3/4"}. Sans src = espace réservé. */
     photos:[
     {src:"images/moto-01.jpg",   cat:"Moto",          alt:"Moto, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-01.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
     {src:"images/moto-02.jpg",   cat:"Moto",          alt:"Moto, photo LEPHOTOGRAPHE"},
     {src:"images/ski-02.jpg",    cat:"Autres sports", alt:"Ski, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-06.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"}
     {src:"images/foot-03.jpg",   cat:"Football",      alt:"Football, photo LEPHOTOGRAPHE"},
+    {src:"images/moto-05.jpg",   cat:"Moto",          alt:"Moto, photo LEPHOTOGRAPHE"},
     {src:"images/volley-02.jpg", cat:"Volleyball",    alt:"Volleyball, photo LEPHOTOGRAPHE"},
     {src:"images/foot-04.jpg",   cat:"Football",      alt:"Football, photo LEPHOTOGRAPHE"},
     {src:"images/volley-01.jpg", cat:"Volleyball",    alt:"Volleyball, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-08.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
     {src:"images/foot-02.jpg",   cat:"Football",      alt:"Football, photo LEPHOTOGRAPHE"},
     {src:"images/moto-04.jpg",   cat:"Moto",          alt:"Moto, photo LEPHOTOGRAPHE"},
     {src:"images/foot-05.JPG",   cat:"Football",      alt:"Football, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-03.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-04.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
     {src:"images/foot-06.jpg",   cat:"Football",      alt:"Football, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-07.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
     {src:"images/ski-01.jpg",    cat:"Autres sports", alt:"Ski, photo LEPHOTOGRAPHE"},
     {src:"images/moto-03.jpg",   cat:"Moto",          alt:"Moto, photo LEPHOTOGRAPHE"},
-    {src:"images/moto-05.jpg",   cat:"Moto",          alt:"Moto, photo LEPHOTOGRAPHE"}
-  ]
+    {src:"images/voiture-02.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
+    {src:"images/voiture-05.jpg",   cat:"Auto",          alt:"Automobile, photo LEPHOTOGRAPHE"},
+   ]
 };
 /* ============================================================== */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
