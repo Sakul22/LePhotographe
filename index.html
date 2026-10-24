@@ -58,6 +58,11 @@ nav a:hover{color:var(--fg)}
 .hero .sub{margin:22px 0 8px;letter-spacing:.16em;text-transform:uppercase;font-size:.82rem;color:#d4d4d8}
 .hero p.intro{max-width:52ch;color:#d4d4d8;margin:0 0 32px}
 .hero .btn{color:#f4f4f5;border-color:#52525b}.hero .btn.pri{background:#ff5a1f;color:#0b0b0c;border-color:#ff5a1f}
+.offer{padding:0;background:var(--bg2);border-bottom:1px solid var(--line)}
+.offer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 28px;padding:26px 0}
+.offer b.tag{display:inline-block;background:var(--acc);color:var(--accfg);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:99px;margin-bottom:8px}
+.offer p{margin:0;max-width:64ch}.offer p strong{color:var(--fg)}.offer small{display:block;color:var(--mut);margin-top:4px}
+.offer-cond{font-size:.82rem;color:var(--mut);margin:12px 0 0}
 .filters{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0}
 .chip{padding:9px 18px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--mut);cursor:pointer;font:inherit;font-size:.88rem;transition:.2s}
 .chip[aria-pressed=true],.chip:hover{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
@@ -160,6 +165,11 @@ details{margin-top:24px;border:1px solid var(--line);border-radius:12px;padding:
 <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn pri" href="#portfolio">Découvrir mon travail</a><a class="btn" href="#reservation">Réserver une prestation</a></div>
 </div></section>
 
+<section class="offer" id="offre" hidden><div class="wrap">
+<div><b class="tag">Offre de lancement</b><p><strong id="offTitle"></strong></p><small id="offSub"></small></div>
+<button class="btn pri" type="button" data-pack="decouverte">En profiter</button>
+</div></section>
+
 <section id="portfolio"><div class="wrap">
 <div class="eyebrow rv">Portfolio</div><h2 class="rv">Le jeu, de près.</h2>
 <p class="lead rv" id="portLead">Une sélection de mes images de sport et de moto.</p>
@@ -195,7 +205,9 @@ details{margin-top:24px;border:1px solid var(--line);border-radius:12px;padding:
 <p class="lead rv">Aucun paiement n’est demandé en ligne. Votre réservation n’est définitive qu’après ma confirmation personnelle.</p>
 <form id="form" novalidate class="form-grid">
 <div class="fields">
-<fieldset><legend>1 · Prestation</legend><div class="opts" id="packOpts"></div></fieldset>
+<fieldset><legend>1 · Prestation</legend><div class="opts" id="packOpts"></div>
+<div id="offerField" hidden><p class="offer-cond" id="offCond"></p>
+<label class="opt" style="margin-top:12px"><input type="checkbox" name="accord_publication"> <span style="font-size:.85rem;color:var(--mut)">J’accepte que quelques photos de cette séance puissent être publiées sur le site et l’Instagram de LEPHOTOGRAPHE.</span></label></div></fieldset>
 <fieldset><legend>2 · Livraison</legend><div class="opts">
 <label class="opt"><input type="radio" name="delivery" value="standard" checked> Livraison standard · 48 à 72 h <b>Gratuite</b></label>
 <label class="opt"><input type="radio" name="delivery" value="express"> Livraison express · 24 h (selon disponibilité) <b>+<span class="xp">7</span> CHF</b></label></div></fieldset>
@@ -252,6 +264,13 @@ const CONFIG={
   formProvider:"Formspree (Formspree, Inc., États-Unis)",            // ex. "Formspree (Formspree, Inc., États-Unis)" — affiché dans la confidentialité
   heroImage:"images/main.jpg",   // ex. "images/hero.jpg"
   expressPrice:7,
+  /* Offre de lancement : mettez active:false pour la retirer. Elle disparaît aussi toute seule après la date "until". */
+  launchOffer:{
+    active:true,
+    until:"2026-12-31",        // dernier jour de l'offre (AAAA-MM-JJ)
+    spots:10,                  // nombre de séances offertes (à retirer à la main quand elles sont toutes données)
+    pack:{id:"decouverte",name:"Séance découverte offerte (Pack Mini)",price:0,qty:"5 à 7 photos retouchées"}
+  },
   categories:["Football","Moto","Volleyball","Autres sports",],
   packs:[
     {id:"mini",name:"Pack Mini",price:15,qty:"5 à 7 photos retouchées"},
@@ -281,7 +300,17 @@ const CONFIG={
 /* ============================================================== */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const allPacks=[...CONFIG.packs,CONFIG.duo];
+const LO=CONFIG.launchOffer;
+const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+const offerOn=!!(LO&&LO.active&&(!LO.until||today()<=LO.until));
+const allPacks=[...(offerOn?[LO.pack]:[]),...CONFIG.packs,CONFIG.duo];
+if(offerOn){
+  const fin=LO.until?new Date(LO.until+"T12:00").toLocaleDateString("fr-CH",{day:"numeric",month:"long",year:"numeric"}):"";
+  $("#offre").hidden=false;
+  $("#offTitle").textContent="Votre première séance est offerte : Pack Mini, 5 à 7 photos retouchées.";
+  $("#offSub").textContent="Pour les "+LO.spots+" premières séances"+(fin?", jusqu’au "+fin:"")+". Une séance découverte par personne ou par équipe.";
+  $("#offCond").textContent="Séance découverte : une par personne ou par équipe, dans la limite des "+LO.spots+" séances offertes"+(fin?" et jusqu’au "+fin:"")+". La livraison express et le déplacement hors région restent payants. En échange, j’apprécie une identification @lephoto_graphe_ si vous partagez les photos.";
+}
 $("#yr").textContent=new Date().getFullYear();
 $$(".xp").forEach(e=>e.textContent=CONFIG.expressPrice);
 ["igBtn","igBtn2","igF"].forEach(i=>$("#"+i).href=CONFIG.instagram);
@@ -333,7 +362,7 @@ const packsEl=$("#packs"),packOpts=$("#packOpts");
 CONFIG.packs.forEach(p=>{
   packsEl.insertAdjacentHTML("beforeend",`<article class="card rv ${p.hot?"hot":""}">${p.hot?'<span class="badge">Le plus populaire</span>':""}<h3>${esc(p.name.toUpperCase())}</h3><div class="price">${p.price}<small>CHF</small></div><div class="qty">${esc(p.qty)}</div><ul>${CONFIG.packIncludes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><button class="btn ${p.hot?"pri":""}" data-pack="${p.id}">Choisir ce pack</button></article>`);
 });
-allPacks.forEach((p,i)=>packOpts.insertAdjacentHTML("beforeend",`<label class="opt"><input type="radio" name="pack" value="${p.id}" ${i==1?"checked":""}> ${esc(p.name)} <b>${p.price} CHF</b></label>`));
+allPacks.forEach((p,i)=>packOpts.insertAdjacentHTML("beforeend",`<label class="opt"><input type="radio" name="pack" value="${p.id}" ${p.hot?"checked":""}> ${esc(p.name)} <b>${p.price?p.price+" CHF":"Offert"}</b></label>`));
 $$("[data-pack]").forEach(b=>b.onclick=()=>{$(`input[name=pack][value=${b.dataset.pack}]`).checked=true;update();$("#reservation").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
 
 /* Récapitulatif */
@@ -341,22 +370,22 @@ const f=$("#form");
 function state(){const id=f.pack.value,p=allPacks.find(x=>x.id===id),ex=f.delivery.value==="express",hors=f.zone.value==="hors";
   return{p,ex,hors,total:p.price+(ex?CONFIG.expressPrice:0)}}
 function update(){const s=state();
-  $("#sPack").textContent=s.p.name;$("#sPrice").textContent=s.p.price+" CHF";
+  $("#sPack").textContent=s.p.name;$("#sPrice").textContent=s.p.price?s.p.price+" CHF":"Offert";
   $("#sExp").textContent=s.ex?"+"+CONFIG.expressPrice+" CHF":"Non";
   $("#sTrip").textContent=s.hors?"Supplément sur devis":"Inclus";
   $("#sTotal").textContent=s.total+" CHF"+(s.hors?" + dépl.":"");
-  const duo=s.p.id==="duo";$("#duoField").hidden=!duo;f.player2.required=duo}
+  const duo=s.p.id==="duo";$("#duoField").hidden=!duo;f.player2.required=duo;
+  const dec=s.p.id==="decouverte";$("#offerField").hidden=!dec;f.accord_publication.required=dec}
 f.addEventListener("input",update);f.addEventListener("change",update);update();
 
 /* Validation + envoi */
-const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
 f.date.min=today();
 const st=$("#status");
 const setErr=(el,msg)=>{let e=el.parentElement.querySelector(".err");if(!e){e=document.createElement("span");e.className="err";el.parentElement.appendChild(e)}e.textContent=msg;el.setAttribute("aria-invalid",!!msg)};
 function validate(){let ok=true,first=null;
-  $$("input,select",f).forEach(el=>{if(el.type==="radio"||el.name==="website")return;
+  $$("input,select",f).forEach(el=>{if(el.type==="radio"||el.name==="website"||el.closest("[hidden]"))return;
     let msg="";const v=el.value.trim();
-    if(el.required&&(el.type==="checkbox"?!el.checked:!v))msg=el.type==="checkbox"?"Consentement requis.":"Champ obligatoire.";
+    if(el.required&&(el.type==="checkbox"?!el.checked:!v))msg=el.type==="checkbox"?(el.name==="accord_publication"?"Accord requis pour la séance offerte.":"Consentement requis."):"Champ obligatoire.";
     else if(el.type==="email"&&v&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v))msg="Adresse e-mail invalide.";
     else if(el.type==="date"&&v&&v<today())msg="La date ne peut pas être passée.";
     setErr(el,msg);if(msg){ok=false;first=first||el}});
@@ -367,7 +396,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();st.className="status";s
   if(!CONFIG.formEndpoint){st.className="status ko";st.innerHTML="L’envoi en ligne n’est pas encore disponible. "+(mail?`Écrivez-moi à <a href="mailto:${esc(mail)}">${esc(mail)}</a> en indiquant le pack choisi.`:`Écrivez-moi sur <a href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Instagram</a> en indiquant le pack choisi.`);return}
   const s=state(),btn=$("#sendBtn");btn.disabled=true;btn.textContent="Envoi en cours…";
   const d=Object.fromEntries(new FormData(f));delete d.website;
-  d.pack_choisi=s.p.name;d.prix_pack=s.p.price+" CHF";d.livraison=s.ex?"Express (+"+CONFIG.expressPrice+" CHF)":"Standard";
+  d.pack_choisi=s.p.name;d.prix_pack=s.p.price?s.p.price+" CHF":"Offert (offre de lancement)";if(s.p.id!=="decouverte")delete d.accord_publication;d.livraison=s.ex?"Express (+"+CONFIG.expressPrice+" CHF)":"Standard";
   d.total_provisoire=s.total+" CHF"+(s.hors?" + déplacement sur devis":"");d._replyto=d.email;d._subject="Nouvelle demande LEPHOTOGRAPHE — "+s.p.name;
   try{const r=await fetch(CONFIG.formEndpoint,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(d)});
     if(!r.ok)throw new Error(r.status);
